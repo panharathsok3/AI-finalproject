@@ -2,7 +2,7 @@ from ucimlrepo import fetch_ucirepo
 import pandas as pd
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.model_selection import train_test_split, cross_validate
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, f1_score
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -31,6 +31,7 @@ X_train, X_test, y_train, y_test = train_test_split(X_scaled, y_encoded, test_si
 
 
 accuracies = []
+f1_scores = []
 
 # Train the model
 lr = MulticlassLogisticRegression(lr=0.01, epochs=1000)
@@ -39,10 +40,11 @@ lr.fit(X_train, y_train)
 # Predict and evaluate
 lr_pred = lr.predict(X_test)
 lr_accuracy = accuracy_score(y_test, lr_pred)
+lr_f1_score = f1_score(y_test, lr_pred, average='weighted')
+f1_scores.append(lr_f1_score)
 accuracies.append(lr_accuracy)
-print("Logistic Regression Accuracy:", accuracy_score(y_test, lr_pred))
-
-
+print("Logistic Regression Accuracy:", lr_accuracy)
+print("Logistic Regression F1 Score:", lr_f1_score)
 
 # Train the kNN model
 knn = knn(k=3)
@@ -51,8 +53,11 @@ knn.fit(X_train, y_train)
 # Predict and evaluate
 knn_pred = knn.predict(X_test)
 knn_accuracy = accuracy_score(y_test, knn_pred)
+knn_f1_score = f1_score(y_test, knn_pred, average='weighted')
+f1_scores.append(knn_f1_score)
 accuracies.append(knn_accuracy)
-print("kNN Accuracy:", accuracy_score(y_test, knn_pred))
+print("kNN Accuracy:", knn_accuracy)
+print("kNN F1 Score:", knn_f1_score)
 
 
 
@@ -63,9 +68,11 @@ nb.fit(X_train, y_train)
 # Predict and evaluate
 nb_pred = nb.predict(X_test)
 nb_accuracy = accuracy_score(y_test, nb_pred)
+nb_f1_score = f1_score(y_test, nb_pred, average='weighted')
+f1_scores.append(nb_f1_score)
 accuracies.append(nb_accuracy)
-print("Multiclass Naive Bayes Accuracy:", accuracy_score(y_test, nb_pred))
-
+print("Multiclass Naive Bayes Accuracy:", nb_accuracy)
+print("Multiclass Naive Bayes F1 Score:", nb_f1_score)
 
 
 # Train the nn model
@@ -75,14 +82,17 @@ nn.fit(X_train, y_train)
 # Predict and evaluate
 nn_pred = nn.predict(X_test)
 nn_accuracy = accuracy_score(y_test, nn_pred)
+nn_f1_score = f1_score(y_test, nn_pred, average='weighted')
+f1_scores.append(nn_f1_score)
 accuracies.append(nn_accuracy)
-print("Neural Network Accuracy:", accuracy_score(y_test, nn_pred))
+print("Neural Network Accuracy:", nn_accuracy)
+print("Neural Network F1 Score:", nn_f1_score)
 
 
 model_names = ['Logistic Regression', 'KNN', 'Naive Bayes', 'Neural Network']
 
 
-# Plotting
+# Accuracy plot
 plt.figure(figsize=(10, 6))
 plt.bar(model_names, accuracies)
 plt.title('Model Accuracy Comparison')
@@ -93,6 +103,22 @@ plt.grid(axis='y')
 
 # Save the plot as a PNG file
 plt.savefig('model_accuracy_comparison.png')
+
+# Show the plot
+plt.show()
+
+
+
+# F1 Plot
+plt.figure(figsize=(10, 6))
+plt.bar(model_names, f1_scores)
+plt.title('Model F1 Comparison')
+plt.xlabel('Model')
+plt.ylabel('F1 score')
+plt.grid(axis='y')
+
+# Save the plot as a PNG file
+plt.savefig('model_f1_comparison.png')
 
 # Show the plot
 plt.show()
