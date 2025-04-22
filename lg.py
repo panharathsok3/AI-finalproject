@@ -1,19 +1,23 @@
 import numpy as np
 
+# Implementation of Multiclass Naive Bayes classifier.
 class MulticlassLogisticRegression:
     def __init__(self, lr=0.01, epochs=1000):
         self.lr = lr
         self.epochs = epochs
 
+    # Softmax function to convert logits to probabilities
     def _softmax(self, z):
-        exp_z = np.exp(z - np.max(z, axis=1, keepdims=True))  # stability
+        exp_z = np.exp(z - np.max(z, axis=1, keepdims=True))
         return exp_z / np.sum(exp_z, axis=1, keepdims=True)
 
+    # Convert labels to one-hot encoding
     def _one_hot(self, y, n_classes):
         onehot = np.zeros((len(y), n_classes))
         onehot[np.arange(len(y)), y] = 1
         return onehot
 
+     # Fit the model to the training data
     def fit(self, X, y):
         X = np.array(X)
         y = np.array(y)
@@ -25,6 +29,7 @@ class MulticlassLogisticRegression:
 
         y_onehot = self._one_hot(y, n_classes)
 
+        # Gradient descent
         for _ in range(self.epochs):
             logits = np.dot(X, self.weights) + self.bias
             probs = self._softmax(logits)
@@ -37,6 +42,7 @@ class MulticlassLogisticRegression:
             self.weights -= self.lr * dw
             self.bias -= self.lr * db
 
+    # Predict the class labels for the input data
     def predict(self, X):
         logits = np.dot(X, self.weights) + self.bias
         probs = self._softmax(logits)

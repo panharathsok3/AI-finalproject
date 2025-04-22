@@ -1,5 +1,6 @@
 import numpy as np
 
+# implementation of Multiclass Naive Bayes classifier.
 class MulticlassNeuralNetwork:
     def __init__(self, input_size, hidden_size, output_size, lr=0.001, epochs=1000):
       self.lr = lr
@@ -12,27 +13,33 @@ class MulticlassNeuralNetwork:
       self.W2 = np.random.randn(hidden_size, output_size) * np.sqrt(1. / hidden_size)
       self.b2 = np.zeros((1, output_size))
 
+    # Define activation functions and their derivatives
     def relu(self, x):
       return np.maximum(0, x)
 
+    # Define the derivative of ReLU
     def relu_derivative(self, x):
       return (x > 0).astype(float)
 
+    # Softmax function for multi-class classification
     def softmax(self, x):
       # Clip values for numerical stability
       x = np.clip(x, -500, 500)
       exp_x = np.exp(x - np.max(x, axis=1, keepdims=True))
       return exp_x / np.sum(exp_x, axis=1, keepdims=True)
 
+    # Cross-entropy loss function
     def cross_entropy_loss(self, predictions, targets):
       epsilon = 1e-9  # To avoid log(0)
       return -np.mean(np.sum(targets * np.log(predictions + epsilon), axis=1))
 
+    # One-hot encoding for target labels
     def _one_hot(self, y, num_classes):
       one_hot = np.zeros((len(y), num_classes))
       one_hot[np.arange(len(y)), y] = 1
       return one_hot
 
+    # Fit the model to the training data
     def fit(self, X, y):
       y_one_hot = self._one_hot(y, self.output_size)
 
@@ -60,6 +67,7 @@ class MulticlassNeuralNetwork:
         self.W1 -= self.lr * dW1
         self.b1 -= self.lr * db1
 
+    # Predict the class labels for the input data
     def predict(self, X):
       z1 = np.dot(X, self.W1) + self.b1
       a1 = self.relu(z1)
